@@ -107,7 +107,7 @@ def main():
     html = response.read()
     data=bs4ProcessLink(html)
     PostData(data)
-    GetData()
+    # GetData()
 
 
 

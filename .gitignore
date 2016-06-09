@@ -5,7 +5,8 @@ npm-debug.log*
 backend/bin
 backend/include
 backend/lib
-
+CFA_IOS/ios
+CFA_IOS/android
 # Runtime data
 pids
 *.pid
