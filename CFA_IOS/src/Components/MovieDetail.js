@@ -9,6 +9,7 @@ import {
   WebView,
   Image,
   TabBarIOS,
+  AlertIOS
 } from 'react-native';
 import util from '../common';
 import MapComponent from './MapComponent';
@@ -21,6 +22,13 @@ export default class MovieDetail  extends Component {
     }
   }
   select(tabname){
+    const row=this.props.row;
+    if(tabname=='ticket'){
+      if(row['ticket'].indexOf('网售')==-1){
+        AlertIOS.alert('购票提示','该电影只支持现场购买');
+        return
+      }
+    }
     this.setState({
       tab:tabname
     });
@@ -28,6 +36,7 @@ export default class MovieDetail  extends Component {
   render(){
       const row=this.props.row;
       let imageRender='';
+      let ticket='';
       if(typeof row['img']=='undefined'){
         imageRender=require('../images/default.jpg')
       }else{
@@ -74,7 +83,7 @@ export default class MovieDetail  extends Component {
           </Icon.TabBarItemIOS>
           <Icon.TabBarItemIOS iconName="ticket" iconSize={20} title="在线购票"onPress={this.select.bind(this,'ticket')} selected={this.state.tab==='ticket'}>
             <ScrollView>
-              <Text>在线购票</Text>
+              <Text>暂未找到格瓦拉的OpenUrl协议支持，抱歉无法跳转</Text>
             </ScrollView>
           </Icon.TabBarItemIOS>
         </TabBarIOS>
