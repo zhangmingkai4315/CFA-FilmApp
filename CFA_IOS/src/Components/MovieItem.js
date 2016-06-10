@@ -24,23 +24,29 @@ export default class MovieItem  extends Component {
       component:MovieDetail,
       title:this.props.row.title,
       passProps:{
-        url:this.props.row.url
+        row:this.props.row
       }
     })
   }
   render(){
       const row=this.props.row;
+      let imageRender='';
+      if(typeof row['img']=='undefined'){
+        imageRender=require('../images/default.jpg')
+      }else{
+        imageRender={uri:row.img}
+      }
       return (
         <TouchableOpacity style={[styles.row,styles.item]} onPress={this.DetailView}>
           <View style={[styles.center]}>
-            <Image source={{uri:row.img}} style={styles.movie_img}/>
+            <Image source={imageRender} style={styles.movie_img}/>
           </View>
           <View style={styles.content}>
           <View>
             <Text style={{width:200}} numberOfLines={1}>{row.movie_name}</Text>
           </View>
           <View style={{marginTop:10}}>
-            <Text style={[styles.movie_play_time,{width:200}]} numberOfLines={1}>{row.movie_play_time}</Text>
+            <Text style={[styles.movie_play_time,{width:200}]} numberOfLines={1}>{row.datetime}日-{row.movie_play_time}</Text>
           </View>
           <View style={{marginTop:10}}>
             <Text style={[styles.movie_play_location,{width:200}]} numberOfLines={1}>{row.movie_play_location}</Text>

@@ -27,7 +27,7 @@ const common={
       // 只获取最后一个key对应的value
       c_obj_array=obj[key]['data']
     }
-        console.log(c_obj_array);
+    console.log(c_obj_array);
     return c_obj_array;
   }
 }
