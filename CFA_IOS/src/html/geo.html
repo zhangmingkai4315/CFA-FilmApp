@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>按起终点经纬度规划路线</title>
+    <link rel="stylesheet" href="http://cache.amap.com/lbs/static/main1119.css"/>
+    <style type="text/css">
+        #panel {
+            position: absolute;
+            background-color: white;
+            max-height: 80%;
+            overflow-y: auto;
+            top: 10px;
+            right: 10px;
+            width: 250px;
+            border: solid 1px silver;
+        }
+    </style>
+    <script type="text/javascript" src="http://webapi.amap.com/maps?v=1.3&key=00f2500a26dda1bcf15733b1db69053b&plugin=AMap.Transfer"></script>
+    <script type="text/javascript" src="http://cache.amap.com/lbs/static/addToolbar.js"></script>
+</head>
+<body>
+<div id="container"></div>
+<div id="panel"></div>
+<script type="text/javascript">
+    var url=window.location.href;
+    var urlParams=url.split('?');
+    var cinama_1=[116.3765000000,39.9589000000];
+    var map = new AMap.Map("container", {
+        resizeEnable: true,
+        zoom: 13 //地图显示的缩放级别
+    });
+    if(urlParams.length>1){
+      console.log(urlParams);
+      var arr=urlParams[1].split('&');
+      var obj={};
+      for(var i in arr){
+        var kv=arr[i].split('=');
+        obj[kv[0]]=kv[1];
+      }
+      if(obj['pos']){
+        var pos=obj['pos'].split(',');
+        map.setCenter(new AMap.LngLat(pos[0],pos[1]));
+      }
+      if(obj['locate']){
+        cinama_1[0]=116.5184280000;
+        cinama_1[1]=39.9028980000;
+      }
+      var transOptions = {
+          map: map,
+          city: '北京市',
+          panel: 'panel',
+          policy: AMap.TransferPolicy.LEAST_TIME
+      };
+      //构造公交换乘类
+      var transfer = new AMap.Transfer(transOptions);
+      transfer.search(new AMap.LngLat(cinama_1[0],cinama_1[1]), new AMap.LngLat(pos[0],pos[1]));
+   }else{
+     map.setCenter(new AMap.LngLat(116.3765000000,39.9589000000));
+   }
+
+</script>
+</body>
+</html>

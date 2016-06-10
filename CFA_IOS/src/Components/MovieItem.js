@@ -36,6 +36,12 @@ export default class MovieItem  extends Component {
       }else{
         imageRender={uri:row.img}
       }
+      if(row.ticket.indexOf('网')!=-1){
+         ticket=(<View style={{flexDirection:"row"}}><Text style={[styles.ticket]} numberOfLines={1}>现场</Text><Text style={[styles.ticket]} numberOfLines={1}>网售</Text>
+      </View>)
+      }else{
+        ticket=(<Text style={[styles.ticket]} numberOfLines={1}>现场</Text>)
+      }
       return (
         <TouchableOpacity style={[styles.row,styles.item]} onPress={this.DetailView}>
           <View style={[styles.center]}>
@@ -50,6 +56,9 @@ export default class MovieItem  extends Component {
           </View>
           <View style={{marginTop:10}}>
             <Text style={[styles.movie_play_location,{width:200}]} numberOfLines={1}>{row.movie_play_location}</Text>
+          </View>
+          <View style={{marginTop:10}}>
+            {ticket}
           </View>
           </View>
         </TouchableOpacity>
@@ -89,6 +98,17 @@ const styles=StyleSheet.create({
   movie_play_time:{
     color:'#a3a3a3',
     fontSize:12,
+    fontFamily: 'Helvetica',
+  },
+  ticket:{
+    color:'#fff',
+    fontSize:11,
+    marginRight:5,
+    backgroundColor:'#4285f4',
+    width:35,
+    borderRadius: 3,
+    fontWeight:'bold',
+    textAlign:'center',
     fontFamily: 'Helvetica',
   },
   movie_play_location:{
