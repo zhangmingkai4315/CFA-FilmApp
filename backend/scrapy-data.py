@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 logging.basicConfig(filename='scrapy.log', format='%(asctime)s %(message)s',datefmt='%m/%d/%Y %I:%M:%S %p',level=logging.INFO)
 config = ConfigParser.RawConfigParser()
 config.read('config.cfg')
+url=config.get('default', 'url')
 def initConfig():
     logging.info(u'获取配置文件')
     url=config.get('default', 'url')
@@ -51,8 +52,8 @@ def getTB(film):
             filmArray.append(i.string.strip())
         else:
             filmWithLink=dict()
-            filmWithLink['fileName']=i.find('a').string.strip()
-            filmWithLink['fileLink']=i.find('a').get('href')
+            filmWithLink['filmName']=i.find('a').string.strip()
+            filmWithLink['filmLink']=i.find('a').get('href')
             filmArray.append(filmWithLink)
     return filmArray
 
@@ -65,7 +66,7 @@ def bs4ProcessLink(html):
     for film_item in fileArray:
         filmInfo=getTB(film_item)
         aFilm=dict()
-        aFilm['DateForPlay']=filmInfo[0]
+        aFilm['datetime']=filmInfo[0]
         start=1
         for title in titleArry:
             aFilm[title]=filmInfo[start]
@@ -73,15 +74,66 @@ def bs4ProcessLink(html):
         return_data.append(aFilm)
         del aFilm
     return return_data
+# 获得详细的电影信息
+def getDetail(item):
+    if not item['url']:
+        return item
+    response = urllib2.urlopen(item['url'])
+    html = response.read()
+    soup=BeautifulSoup(html,"html.parser")
+    img=soup.find(id='ess_ctr1520_FilmDetail_imgTitle')
+    if img:
+        item['img']=url+img['src']
+    detailListDom=soup.find_all(attrs={'class':'MsoNormal'})
+    detailList=[]
+    for index,dom in enumerate(detailListDom):
+        text=dom.get_text()
+        if text.startswith(u'影片简介'):
+            item[u'movie_detail']=detailListDom[index+1].get_text()
+        else:
+            temp=text.split(':')
+            if len(temp)==1:
+                continue
+            else:
+                if temp[0]==u'上映日期':
+                    item['firstShow']=temp[1]
+                elif temp[0]==u'导演':
+                    item['director']=temp[1]
+                elif temp[0]==u'主演':
+                    item['castlist']=temp[1]
+                elif temp[0]==u'制片国家/地区':
+                    item['country']=temp[1]
+                elif temp[0]==u'编剧':
+                    item['scriptwriter']=temp[1]
+                elif temp[0]==u'片长':
+                    item['showingtime']=temp[1]
+                elif temp[0]==u'又名':
+                    item['anothername']=temp[1]
+                elif temp[0]==u'类型':
+                    item['filmtype']=temp[1]
+    return item
 
 def PostData(data):
     post_key=time.strftime('%Y%m')
     api_key=config.get('api', 'key')
     api_url=config.get('api','cloud_url')
     post_url=api_url+'/playinfo/'+post_key+'.json?auth='+api_key
-    print post_url
+    for item in data:
+        item['subtitle']=item[u'字幕']
+        item['movie_play_location']=item[u'影厅']
+        item['movie_name']=item[u'影片']['filmName']
+        item['movie_time']=item[u'时长']
+        item['movie_play_time']=item[u'放映时间']
+        item['url']=config.get('default', 'url')+item[u'影片']['filmLink']
+        item['lang']=item[u'语别']
+        item['ticket']=item[u'购票']
+        item['price']=item[u'票价']
+        item=getDetail(item)
+        # print item
+    print data
+
     req=requests.post(post_url,data=json.dumps({'data':data}))
-    print req.status_code
+    print req.json()
 def GetData():
     post_key=time.strftime('%Y%m')
     api_key=config.get('api', 'key')
@@ -89,7 +141,7 @@ def GetData():
     post_url=api_url+'/playinfo/'+post_key+'.json?auth='+api_key
     print post_url
     req=requests.get(post_url)
-    print req.json()
+    print req.text
 
 
 #执行主进程

@@ -9,44 +9,46 @@ import {
   ListView,
 } from 'react-native';
 import MovieList from './Components/MovieList';
-const rows=[{
-  image:'https://img1.doubanio.com/view/movie_poster_cover/mpst/public/p2345947329.jpg',
-  movie_name:'背靠背，脸对脸 (1994)',
-  movie_play_location:'小西天艺术影院,1号厅',
-  movie_play_time:'141分钟',
-  douban_url:"https://movie.douban.com/subject/1307856/"
-},{
-  image:'https://img1.doubanio.com/view/movie_poster_cover/mpst/public/p2345947329.jpg',
-  movie_name:'背靠背，脸对脸 (1994)',
-  movie_play_location:'小西天艺术影院,1号厅',
-  movie_play_time:'142分钟',
-  douban_url:"https://movie.douban.com/subject/1307856/"
-},{
-  image:'https://img1.doubanio.com/view/movie_poster_cover/mpst/public/p2345947329.jpg',
-  movie_name:'背靠背，脸对脸 (1994)',
-  movie_play_location:'小西天艺术影院,1号厅',
-  movie_play_time:'143分钟',
-  douban_url:"https://movie.douban.com/subject/1307856/"
-}]
+import Loading from './Components/Loading';
+import util from './common';
+import services from './services';
+
+const rows=[];
+const ds= new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 export default class App extends Component {
   constructor(props){
     super(props);
-    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state={
-      dataSource: ds.cloneWithRows(rows),
+      loading:true,
+      dataSource: ds.cloneWithRows([]),
     }
+  }
+  componentDidMount(){
+    util.get(services.wilddog_cfa_current_month_playinfo,data=>{
+      console.log(data);
+      this.setState({
+        dataSource:ds.cloneWithRows(util.ConvertData(data)),
+        loading:false
+      })
+      },err=>{
+      this.setState({
+        loading:false
+      });
+    })
   }
   render() {
     return (
-      <ScrollView style={styles.container}>
-        <MovieList dataSource={this.state.dataSource} {...this.props}/>
-      </ScrollView>
+        this.state.loading===false?
+        <ScrollView style={styles.container}>
+         <MovieList dataSource={this.state.dataSource} {...this.props}/>
+        </ScrollView>
+        :<Loading/>
     );
   }
 }
 const styles = StyleSheet.create({
   container: {
-    // marginTop:60,
+    marginTop:60,
     backgroundColor: '#F5FCFF',
   }
 });

@@ -24,7 +24,7 @@ export default class MovieItem  extends Component {
       component:MovieDetail,
       title:this.props.row.title,
       passProps:{
-        url:this.props.row.douban_url
+        url:this.props.row.url
       }
     })
   }
@@ -33,7 +33,7 @@ export default class MovieItem  extends Component {
       return (
         <TouchableOpacity style={[styles.row,styles.item]} onPress={this.DetailView}>
           <View style={[styles.center]}>
-            <Image source={{uri:row.image}} style={styles.movie_img}/>
+            <Image source={{uri:row.img}} style={styles.movie_img}/>
           </View>
           <View style={styles.content}>
           <View>
